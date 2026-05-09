@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Agenda 2030 · Financiamiento ODS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --un-blue:        #009EDB;
+  --un-deep:        #003F7F;
+  --un-darker:      #002247;
+  --ink:            #0c1320;
+  --ink2:           #1a2233;
+  --paper:          #f6f5f1;
+  --paper2:         #ecebe5;
+  --rule:           #d8d6cd;
+  --muted:          #5b6473;
+  --c1:#E5243B; --c2:#DDA63A; --c3:#4C9F38; --c4:#C5192D; --c5:#FF3A21;
+  --c6:#26BDE2; --c7:#FCC30B; --c8:#A21942; --c9:#FD6925; --c10:#DD1367;
+  --c11:#FD9D24; --c12:#BF8B2E; --c13:#3F7E44; --c14:#0A97D9; --c15:#56C02B;
+  --c16:#00689D; --c17:#19486A;
+  --slide-w: 100vw;
+  --slide-h: 100vh;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── DECK CONTAINER ─── */
+.deck {
+  width: 100vw; height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── SLIDES ─── */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1);
+  transform: translateX(60px);
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+.slide.prev {
+  opacity: 0;
+  transform: translateX(-60px);
+}
+
+/* ─── ODS COLOR BAND ─── */
+.ods-band {
+  display: grid;
+  grid-template-columns: repeat(17, 1fr);
+  height: 7px;
+  flex-shrink: 0;
+}
+.ods-band span { display: block; }
+
+/* ─── NAV BAR ─── */
+.nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,15,28,.92);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 28px;
+  gap: 16px;
+}
+.nav-dots {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: center;
+}
+.nav-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  cursor: pointer;
+  transition: background .25s, transform .25s;
+  border: none;
+}
+.nav-dot.active {
+  background: var(--un-blue);
+  transform: scale(1.4);
+}
+.nav-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.nav-btn:hover { background: rgba(255,255,255,.18); }
+.nav-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+.slide-counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  color: rgba(255,255,255,.4);
+  white-space: nowrap;
+  letter-spacing: .1em;
+}
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: var(--un-blue);
+  transition: width .4s ease;
+  z-index: 200;
+}
+
+/* ─── CONTENT UTILITIES ─── */
+.slide-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 52px 64px 80px;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+.kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.kicker::before {
+  content: '';
+  width: 28px; height: 1.5px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+h1, h2, h3, h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.05;
+}
+.h-display { font-size: clamp(2.4rem, 5vw, 4.8rem); font-weight: 900; }
+.h-section  { font-size: clamp(1.8rem, 3.2vw, 3rem); }
+.h-card     { font-size: clamp(1.1rem, 1.5vw, 1.35rem); }
+p { line-height: 1.65; }
+
+/* ─── SLIDE 1: PORTADA / HERO ─── */
+.s-hero {
+  background: var(--un-darker);
+  color: #fff;
+}
+.s-hero .grid-bg {
+  position: absolute; inset: 0; z-index: 1;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+.s-hero .glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+.s-hero .glow-1 {
+  width: 700px; height: 500px;
+  background: radial-gradient(ellipse, rgba(0,158,219,.3) 0%, transparent 70%);
+  top: -100px; left: -100px;
+}
+.s-hero .glow-2 {
+  width: 500px; height: 400px;
+  background: radial-gradient(ellipse, rgba(25,72,106,.5) 0%, transparent 70%);
+  top: 0; right: 0;
+}
+.hero-body {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 60px;
+  align-items: end;
+  flex: 1;
+}
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.6);
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 24px;
+}
+.hero-eyebrow::before { content: ''; width: 40px; height: 1px; background: rgba(255,255,255,.5); }
+.hero-title { color: #fff; margin-bottom: 16px; }
+.hero-title em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--c6), var(--c3), var(--c7));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-sub {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,.72);
+  line-height: 1.6;
+  max-width: 55ch;
+  margin-bottom: 28px;
+}
+.hero-meta {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  color: rgba(255,255,255,.45);
+  letter-spacing: .1em;
+}
+.hero-meta span { display: flex; align-items: center; gap: 8px; }
+.hero-meta span::before { content: ''; width: 5px; height: 5px; background: var(--un-blue); border-radius: 50%; }
+.counters {
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04);
+}
+.counter {
+  padding: 28px 32px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.counter:last-child { border-bottom: none; }
+.counter .num {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.4rem, 4vw, 3.8rem);
+  letter-spacing: -.04em;
+  line-height: 1;
+}
+.counter .lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+  text-align: right;
+  max-width: 14ch;
+}
+.counter:nth-child(1) .num { color: var(--c6); }
+.counter:nth-child(2) .num { color: var(--c7); }
+.counter:nth-child(3) .num { color: var(--c5); }
+
+/* ─── SLIDE 2: TRES PILARES ─── */
+.s-pilares {
+  background: var(--paper);
+  color: var(--ink);
+}
+.s-pilares .slide-inner {
+  padding: 28px 48px 68px;
+}
+.s-pilares .kicker { margin-bottom: 10px; }
+.s-pilares > .slide-inner > h2,
+.s-pilares .slide-inner h2 {
+  font-size: 1.6rem !important;
+  margin-bottom: 14px !important;
+}
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 1px solid var(--rule);
+  flex: 1;
+  overflow: hidden;
+}
+.pillar {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-right: 1px solid var(--rule);
+  overflow: hidden;
+}
+.pillar:last-child { border-right: none; }
+.pillar-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem;
+  letter-spacing: .2em;
+  color: var(--muted);
+}
+.pillar-icon {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+.pillar-icon svg { width: 20px; height: 20px; }
+.pillar h3 { font-size: 1.15rem; font-weight: 800; }
+.pillar p { font-size: .8rem; color: var(--muted); line-height: 1.5; flex: 1; }
+.pillar-stat {
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.pillar-stat strong {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: .9rem;
+}
+.pillar-stat span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: right;
+  max-width: 16ch;
+}
+
+/* ─── SLIDE 3: 17 ODS GRID ─── */
+.s-ods { background: var(--paper2); color: var(--ink); }
+.ods-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 5px;
+  flex: 1;
+}
+.ods-row2 {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+.ods-tile {
+  color: #fff;
+  padding: 12px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+  transition: transform .3s;
+}
+.ods-tile:hover { transform: scale(1.03); z-index: 2; }
+.ods-tile .tn {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.ods-tile .tt {
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+}
+
+/* ─── SLIDE 4: DIAGNÓSTICO ─── */
+.s-diag { background: var(--ink); color: #fff; }
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 1px solid rgba(255,255,255,.08);
+  flex: 1;
+}
+.stat-card {
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+.stat-card:last-child { border-right: none; }
+.stat-pct {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  letter-spacing: -.04em;
+  line-height: 1;
+}
+.stat-bar {
+  height: 5px;
+  background: rgba(255,255,255,.1);
+  position: relative;
+  overflow: hidden;
+}
+.stat-bar i {
+  display: block;
+  height: 100%;
+  transition: width 1.4s cubic-bezier(.2,.7,.2,1);
+  width: 0;
+}
+.stat-label { font-size: 1rem; font-weight: 600; }
+.stat-detail { font-size: .85rem; color: rgba(255,255,255,.6); line-height: 1.6; flex: 1; }
+.stat-source {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.35);
+}
+
+/* ─── SLIDE 5: BRECHA FINANCIERA (PDF) ─── */
+.s-brecha { background: var(--paper); color: var(--ink); }
+.brecha-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--rule);
+  flex: 1;
+}
+.fin-card {
+  padding: 36px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-right: 1px solid var(--rule);
+}
+.fin-card:last-child { border-right: none; }
+.fin-big {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+  letter-spacing: -.03em;
+  line-height: 1.1;
+}
+.fin-card h3 { font-size: 1rem; font-weight: 700; }
+.fin-card p { font-size: .85rem; color: var(--muted); line-height: 1.6; flex: 1; }
+.fin-src {
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ─── SLIDE 6: TASAS DE INTERÉS COMPARADAS ─── */
+.s-tasas { background: var(--ink2); color: #fff; }
+.tasas-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 48px;
+  flex: 1;
+  align-items: start;
+}
+.tasa-row {
+  display: grid;
+  grid-template-columns: 190px 1fr 60px;
+  gap: 18px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.tasa-row:last-child { border-bottom: none; }
+.tasa-name { font-size: .9rem; font-weight: 500; }
+.tasa-bar {
+  height: 10px;
+  background: rgba(255,255,255,.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.tasa-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1.4s cubic-bezier(.2,.7,.2,1);
+  width: 0;
+}
+.tasa-val {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-align: right;
+}
+.tasa-highlight {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.tasa-big {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 3.6rem;
+  letter-spacing: -.04em;
+  line-height: 1;
+  color: var(--c1);
+}
+.tasa-caption { font-size: .9rem; color: rgba(255,255,255,.7); line-height: 1.6; }
+
+/* ─── SLIDE 7: SECTOR PRIVADO / ESG ─── */
+.s-esg { background: var(--paper); color: var(--ink); }
+.esg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--rule);
+  margin-bottom: 18px;
+}
+.esg-pillar {
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-right: 1px solid var(--rule);
+}
+.esg-pillar:last-child { border-right: none; }
+.esg-letter {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 3rem;
+  line-height: 1;
+}
+.esg-pillar h3 { font-size: 1rem; font-weight: 700; }
+.esg-pillar p { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+.esg-note {
+  background: var(--ink);
+  color: #fff;
+  padding: 22px 28px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+.esg-note-icon {
+  width: 36px; height: 36px;
+  background: var(--un-blue);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: .85rem;
+}
+.esg-note p { font-size: .88rem; color: rgba(255,255,255,.75); line-height: 1.6; }
+
+/* ─── SLIDE 8: GASTO MILITAR vs ODS ─── */
+.s-militar { background: var(--ink); color: #fff; }
+.militar-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  flex: 1;
+}
+.militar-stat {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.militar-num {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  letter-spacing: -.03em;
+  line-height: 1;
+}
+.militar-stat h4 { font-size: .95rem; font-weight: 700; }
+.militar-stat p { font-size: .82rem; color: rgba(255,255,255,.65); line-height: 1.6; flex: 1; }
+.militar-src {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .1em;
+}
+.vs-callout {
+  grid-column: 1 / -1;
+  background: rgba(229,36,59,.08);
+  border: 1px solid rgba(229,36,59,.25);
+  padding: 22px 28px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.vs-callout .big-pct {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 3rem;
+  color: var(--c1);
+  letter-spacing: -.03em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.vs-callout p { font-size: .9rem; color: rgba(255,255,255,.75); line-height: 1.55; }
+
+/* ─── SLIDE 9: CRONOLOGÍA ─── */
+.s-timeline { background: #fff; color: var(--ink); }
+.tl-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tl-track {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  position: relative;
+  padding: 60px 0;
+}
+.tl-track::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--rule);
+}
+.tl-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+.tl-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid var(--un-deep);
+  background: #fff;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+.tl-dot.major { background: var(--un-deep); }
+.tl-dot.crisis { border-color: var(--c1); background: var(--c1); }
+.tl-year {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+.tl-label { font-size: .75rem; font-weight: 600; text-align: center; max-width: 12ch; line-height: 1.3; }
+.tl-detail { font-size: .68rem; color: var(--muted); text-align: center; max-width: 14ch; line-height: 1.4; }
+.tl-item:nth-child(even) .tl-year,
+.tl-item:nth-child(even) .tl-label,
+.tl-item:nth-child(even) .tl-detail {
+  order: 2;
+}
+.tl-item:nth-child(even) .tl-dot { order: 1; }
+.tl-item:nth-child(odd) { flex-direction: column-reverse; }
+
+/* ─── SLIDE 10: COOPERACIÓN ONU ─── */
+.s-onu { background: var(--paper2); color: var(--ink); }
+.onu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  flex: 1;
+}
+.onu-card {
+  background: #fff;
+  border-top: 4px solid var(--un-blue);
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.onu-year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  color: var(--un-blue);
+  letter-spacing: .14em;
+}
+.onu-card h4 { font-size: .95rem; font-weight: 700; }
+.onu-card p { font-size: .82rem; color: var(--muted); line-height: 1.55; flex: 1; }
+
+/* ─── SLIDE 11: RANKING TOP 3 ─── */
+.s-ranking { background: var(--paper2); color: var(--ink); }
+.top-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  flex: 1;
+}
+.top-col {
+  background: #fff;
+  border-top: 6px solid;
+  padding: 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.top-col.best { border-color: var(--c3); }
+.top-col.worst { border-color: var(--c1); }
+.top-col-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  color: #fff;
+  display: inline-block;
+  margin-bottom: 18px;
+}
+.best .top-col-label { background: var(--c3); }
+.worst .top-col-label { background: var(--c1); }
+.top-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.top-row:last-child { border-bottom: none; }
+.top-badge {
+  width: 44px; height: 44px;
+  border-radius: 3px;
+  display: grid; place-items: center;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+.top-row h4 { font-family: 'Inter', sans-serif; font-size: .85rem; font-weight: 700; margin-bottom: 3px; }
+.top-row p { font-size: .75rem; color: var(--muted); line-height: 1.45; }
+.top-stat {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  text-align: right;
+  line-height: 1;
+}
+.top-stat small {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 4px;
+  letter-spacing: .1em;
+}
+
+/* ─── SLIDE 12: REGIONAL ─── */
+.s-regional { background: var(--paper); color: var(--ink); }
+.reg-list { display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: center; }
+.reg-row {
+  display: grid;
+  grid-template-columns: 230px 1fr 75px;
+  gap: 20px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.reg-row:last-child { border-bottom: none; }
+.reg-name { font-weight: 600; font-size: .9rem; }
+.reg-bar {
+  height: 12px;
+  background: var(--paper2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.reg-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1.4s cubic-bezier(.2,.7,.2,1);
+  width: 0;
+}
+.reg-score {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-align: right;
+}
+
+/* ─── SLIDE 13: CRÍTICAS ─── */
+.s-criticas { background: var(--ink2); color: #fff; }
+.criticas-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border: 1px solid rgba(255,255,255,.07);
+  flex: 1;
+}
+.crit-card {
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-right: 1px solid rgba(255,255,255,.07);
+}
+.crit-card:last-child { border-right: none; }
+.crit-accent { height: 3px; width: 28px; }
+.crit-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem;
+  color: rgba(255,255,255,.4);
+  letter-spacing: .18em;
+}
+.crit-card h3 { font-size: .95rem; font-weight: 700; color: #fff; }
+.crit-card p { font-size: .8rem; color: rgba(255,255,255,.65); line-height: 1.6; flex: 1; }
+
+/* ─── SLIDE 14: GUÍA DE INVESTIGACIÓN ─── */
+.s-guia { background: var(--un-darker); color: #fff; }
+.guia-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  flex: 1;
+}
+.guia-group {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.guia-group-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--un-blue);
+  margin-bottom: 4px;
+}
+.guia-q {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: .82rem;
+  color: rgba(255,255,255,.8);
+  line-height: 1.5;
+}
+.guia-q::before {
+  content: '→';
+  color: var(--un-blue);
+  font-size: .75rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ─── SLIDE 15: CONCLUSIÓN ─── */
+.s-conclusion { background: var(--un-darker); color: #fff; }
+.concl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border: 1px solid rgba(255,255,255,.1);
+  flex: 1;
+}
+.concl-item {
+  padding: 32px 30px;
+  display: flex;
+  gap: 22px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  border-right: 1px solid rgba(255,255,255,.1);
+}
+.concl-item:nth-child(2n) { border-right: none; }
+.concl-item:nth-child(3), .concl-item:nth-child(4) { border-bottom: none; }
+.concl-n {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 2.2rem;
+  color: var(--un-blue);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 40px;
+}
+.concl-item h4 { font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: 8px; }
+.concl-item p { font-size: .82rem; color: rgba(255,255,255,.7); line-height: 1.6; }
+.quote-block {
+  border-top: 1px solid rgba(255,255,255,.15);
+  margin-top: 18px;
+  padding-top: 18px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.qmark {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 4.5rem;
+  line-height: .7;
+  color: var(--un-blue);
+  flex-shrink: 0;
+}
+.quote-block p {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: .95rem;
+  line-height: 1.5;
+  color: #fff;
+}
+.quote-block cite {
+  display: block;
+  margin-top: 10px;
+  font-style: normal;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .14em;
+  color: rgba(255,255,255,.45);
+}
+
+/* ─── KEYBOARD HINT ─── */
+.hint {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .12em;
+  z-index: 200;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="hint">← → para navegar</div>
+
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════════════
+       SLIDE 1 — PORTADA / HERO
+  ══════════════════════════════════════ -->
+  <div class="slide s-hero active" data-slide="0">
+    <div class="ods-band" id="band1"></div>
+    <div class="grid-bg"></div>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="slide-inner">
+      <div class="hero-body">
+        <div>
+          <div class="hero-eyebrow">Agenda 2030 · Naciones Unidas</div>
+          <h1 class="h-display hero-title">
+            Financiamiento<br>para los ODS.<br>
+            <em>Compromisos renovados.</em>
+          </h1>
+          <p class="hero-sub">Un análisis institucional sobre los mecanismos de financiamiento, la brecha fiscal global y los compromisos de la Alianza Mundial para el Desarrollo Sostenible. A seis años del horizonte, la brecha crece a 6,4 billones de dólares anuales.</p>
+          <div class="hero-meta">
+            <span>Fuentes: ONU · OECD · UNCTAD · SIPRI</span>
+            <span>Datos actualizados: 2024–2025</span>
+            <span>Sala de Tratados Internacionales</span>
+          </div>
+        </div>
+        <div class="counters">
+          <div class="counter">
+            <div class="num">17</div>
+            <div class="lbl">Objetivos<br>globales</div>
+          </div>
+          <div class="counter">
+            <div class="num">169</div>
+            <div class="lbl">Metas<br>específicas</div>
+          </div>
+          <div class="counter">
+            <div class="num">6,4 B</div>
+            <div class="lbl">Brecha anual<br>USD proyectada 2030</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ods-band" id="band1b"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 2 — TRES PILARES
+  ══════════════════════════════════════ -->
+  <div class="slide s-pilares" data-slide="1">
+    <div class="slide-inner">
+      <div class="kicker" style="color:var(--muted)">01 · Marco conceptual</div>
+      <h2 class="h-section">Tres pilares para un desarrollo verdaderamente sostenible.</h2>
+      <div class="pillars-grid" style="flex:1">
+        <div class="pillar">
+          <div class="pillar-num">PILAR 01 · PERSONAS</div>
+          <div class="pillar-icon" style="background:var(--c1)">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="4"/><path d="M12 13c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z"/></svg>
+          </div>
+          <h3>Personas</h3>
+          <p>Erradicar la pobreza y el hambre en todas sus formas, garantizando dignidad, igualdad y acceso a salud, educación y agua para los 8.000 millones de habitantes del planeta.</p>
+          <div class="pillar-stat">
+            <strong>ODS 1 · 2 · 3 · 4 · 5</strong>
+            <span>5 objetivos centrados en la persona</span>
+          </div>
+        </div>
+        <div class="pillar" style="border-top:4px solid var(--c13)">
+          <div class="pillar-num">PILAR 02 · PLANETA</div>
+          <div class="pillar-icon" style="background:var(--c13)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 4 3 14 0 18M12 3c-3 4-3 14 0 18"/></svg>
+          </div>
+          <h3>Planeta</h3>
+          <p>Proteger los recursos naturales y el clima de la Tierra para las generaciones futuras: combatir la crisis climática, frenar la pérdida de biodiversidad y transformar los modelos de consumo.</p>
+          <div class="pillar-stat">
+            <strong>ODS 6 · 12 · 13 · 14 · 15</strong>
+            <span>5 objetivos medioambientales</span>
+          </div>
+        </div>
+        <div class="pillar" style="border-top:4px solid var(--c8)">
+          <div class="pillar-num">PILAR 03 · PROSPERIDAD</div>
+          <div class="pillar-icon" style="background:var(--c8)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M5 20V10l4-3 4 3v10M13 20V13l4-3 4 3v7"/></svg>
+          </div>
+          <h3>Prosperidad</h3>
+          <p>Asegurar que todos los seres humanos puedan disfrutar de una vida próspera mediante el crecimiento económico inclusivo, la innovación tecnológica y la reducción de las desigualdades estructurales.</p>
+          <div class="pillar-stat">
+            <strong>ODS 7 · 8 · 9 · 10 · 11</strong>
+            <span>5 objetivos económicos y sociales</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 3 — 17 ODS GRID
+  ══════════════════════════════════════ -->
+  <div class="slide s-ods" data-slide="2">
+    <div class="slide-inner">
+      <div class="kicker" style="color:var(--muted)">02 · Los objetivos</div>
+      <h2 class="h-section" style="margin-bottom:20px">Los 17 Objetivos de Desarrollo Sostenible.</h2>
+      <div class="ods-grid" id="odsGrid"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 4 — DIAGNÓSTICO 2024
+  ══════════════════════════════════════ -->
+  <div class="slide s-diag" data-slide="3">
+    <div class="slide-inner">
+      <div class="kicker" style="color:rgba(255,255,255,.5)">03 · Diagnóstico 2024</div>
+      <h2 class="h-section" style="color:#fff;margin-bottom:28px">A seis años del plazo, el balance es severo.</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-pct" style="color:var(--c3)">17%</div>
+          <div class="stat-bar"><i style="background:var(--c3)" data-w="17"></i></div>
+          <div class="stat-label">En trayectoria</div>
+          <div class="stat-detail">Metas que avanzan al ritmo suficiente para cumplirse en 2030. Concentradas en acceso a electricidad, conectividad móvil y reducción de mortalidad infantil.</div>
+          <div class="stat-source">United Nations · SDG Report 2024</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-pct" style="color:var(--c7)">48%</div>
+          <div class="stat-bar"><i style="background:var(--c7)" data-w="48"></i></div>
+          <div class="stat-label">Progreso insuficiente</div>
+          <div class="stat-detail">Metas con avance moderado o débil. Requieren multiplicar entre 3 y 5 veces el ritmo actual. Incluyen pobreza extrema, educación y trabajo decente.</div>
+          <div class="stat-source">United Nations · SDG Report 2024</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-pct" style="color:var(--c1)">35%</div>
+          <div class="stat-bar"><i style="background:var(--c1)" data-w="35"></i></div>
+          <div class="stat-label">Retroceso o estancamiento</div>
+          <div class="stat-detail">Metas que han empeorado respecto al punto de partida 2015. Hambre, biodiversidad, desigualdad y emisiones encabezan los retrocesos.</div>
+          <div class="stat-source">United Nations · SDG Report 2024</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 5 — BRECHA DE FINANCIAMIENTO
+  ══════════════════════════════════════ -->
+  <div class="slide s-brecha" data-slide="4">
+    <div class="slide-inner">
+      <div class="kicker" style="color:var(--muted)">04 · Brecha de financiamiento</div>
+      <h2 class="h-section" style="margin-bottom:24px">Los flujos no alcanzan la escala del compromiso.</h2>
+      <div class="brecha-grid">
+        <div class="fin-card">
+          <div class="fin-big" style="color:var(--un-deep)">USD 2,5 B → 6,4 B</div>
+          <h3>Brecha anual en crecimiento</h3>
+          <p>La brecha pasó de 2,5 billones en 2015 a 4 billones en 2022 (+60%). Sin reformas en el sistema global, se prevé que alcance 6,4 billones anuales en 2030 entre países desarrollados y economías emergentes.</p>
+          <div class="fin-src">OECD · Global Outlook on Financing for SD 2025</div>
+        </div>
+        <div class="fin-card">
+          <div class="fin-big" style="color:var(--c3)">USD 741 K M</div>
+          <h3>Déficit neto de deuda (2022–2024)</h3>
+          <p>Países en desarrollo pagaron 741 mil millones más en capital e intereses de lo que recibieron en nuevo financiamiento. La mayor diferencia en más de 50 años; tasas de interés al 10%, el doble que antes de 2020.</p>
+          <div class="fin-src">Banco Mundial · International Debt Report 2025</div>
+        </div>
+        <div class="fin-card">
+          <div class="fin-big" style="color:var(--c13)">USD 223,7 K M</div>
+          <h3>AOD récord en 2023</h3>
+          <p>Asistencia Oficial al Desarrollo neta — máximo histórico — pero con un porcentaje creciente destinado a refugiados dentro de los países donantes, no a programas en países receptores.</p>
+          <div class="fin-src">OECD · DAC Statistics 2024</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 6 — TASAS DE INTERÉS COMPARADAS
+  ══════════════════════════════════════ -->
+  <div class="slide s-tasas" data-slide="5">
+    <div class="slide-inner">
+      <div class="kicker" style="color:rgba(255,255,255,.45)">05 · Asimetría estructural del financiamiento</div>
+      <h2 class="h-section" style="color:#fff;margin-bottom:28px">Las tasas de interés penalizan a las economías en desarrollo.</h2>
+      <div class="tasas-layout">
+        <div>
+          <p style="font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:20px;line-height:1.6">Tasas de interés promedio en créditos internacionales 2020–2024. La asimetría evidencia un sistema que perpetúa ciclos de vulnerabilidad y dependencia económica.</p>
+          <div class="tasa-row">
+            <div class="tasa-name">🇩🇪 Alemania</div>
+            <div class="tasa-bar"><i style="background:var(--c3)" data-w="8.2"></i></div>
+            <div class="tasa-val" style="color:var(--c3)">0,8%</div>
+          </div>
+          <div class="tasa-row">
+            <div class="tasa-name">🇺🇸 Estados Unidos</div>
+            <div class="tasa-bar"><i style="background:var(--c3)" data-w="25.5"></i></div>
+            <div class="tasa-val" style="color:var(--c3)">2,5%</div>
+          </div>
+          <div class="tasa-row">
+            <div class="tasa-name">🌏 Asia</div>
+            <div class="tasa-bar"><i style="background:var(--c7)" data-w="54.1"></i></div>
+            <div class="tasa-val" style="color:var(--c7)">5,3%</div>
+          </div>
+          <div class="tasa-row">
+            <div class="tasa-name">🌎 Latinoamérica y Caribe</div>
+            <div class="tasa-bar"><i style="background:var(--c9)" data-w="69.4"></i></div>
+            <div class="tasa-val" style="color:var(--c9)">6,8%</div>
+          </div>
+          <div class="tasa-row">
+            <div class="tasa-name">🌍 África</div>
+            <div class="tasa-bar"><i style="background:var(--c1)" data-w="100"></i></div>
+            <div class="tasa-val" style="color:var(--c1)">9,8%</div>
+          </div>
+        </div>
+        <div>
+          <div class="tasa-highlight">
+            <div class="tasa-big">×12</div>
+            <div class="tasa-caption">África presenta una tasa de interés que supera <strong>12 veces</strong> la de Alemania — evidenciando un mundo con niveles de endeudamiento radicalmente dispares que impiden financiar los ODS.</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(255,255,255,.35);letter-spacing:.1em">UNCTAD · Un mundo endeudado 2025</div>
+          </div>
+          <div style="margin-top:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:22px">
+            <div style="font-size:.85rem;color:rgba(255,255,255,.5);margin-bottom:10px;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em">RESTRICCIONES FISCALES SEVERAS</div>
+            <p style="font-size:.85rem;color:rgba(255,255,255,.75);line-height:1.6">Muchos estados destinan <strong>más recursos al pago de deudas</strong> que a políticas públicas vinculadas a los ODS (salud, educación, infraestructura, transición energética), agravado por la inflación global.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 7 — SECTOR PRIVADO / ESG
+  ══════════════════════════════════════ -->
+  <div class="slide s-esg" data-slide="6">
+    <div class="slide-inner">
+      <div class="kicker" style="color:var(--muted)">06 · Rol del sector privado</div>
+      <h2 class="h-section" style="margin-bottom:22px">Los criterios ESG como marco de responsabilidad corporativa.</h2>
+      <div class="esg-grid">
+        <div class="esg-pillar" style="border-top:4px solid var(--c3)">
+          <div class="esg-letter" style="color:var(--c3)">E</div>
+          <h3>Ambiental <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:400;color:var(--muted)">Environmental</span></h3>
+          <p>Reducción de huella ecológica: gestión de residuos, eficiencia energética, energías renovables, control de emisiones de GEI y protección de la biodiversidad.</p>
+        </div>
+        <div class="esg-pillar" style="border-top:4px solid var(--un-blue)">
+          <div class="esg-letter" style="color:var(--un-blue)">S</div>
+          <h3>Social <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:400;color:var(--muted)">Social</span></h3>
+          <p>Impacto en personas y comunidades: derechos humanos, igualdad, diversidad, inclusión, seguridad laboral y gestión de la cadena de suministro.</p>
+        </div>
+        <div class="esg-pillar" style="border-top:4px solid var(--c8);border-right:none">
+          <div class="esg-letter" style="color:var(--c8)">G</div>
+          <h3>Gobernanza <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:400;color:var(--muted)">Governance</span></h3>
+          <p>Calidad de gestión corporativa: ética empresarial, lucha contra corrupción, transparencia financiera, composición del consejo y derechos de accionistas.</p>
+        </div>
+      </div>
+      <div class="esg-note" style="margin-top:14px">
+        <div class="esg-note-icon">!</div>
+        <p><strong>La adopción ESG ya no es opcional.</strong> Responde a las expectativas de inversores y consumidores que demandan mayor ética corporativa. Se refuerza con marcos legales como la CSRD europea. Para que las empresas cumplan, se requieren <strong>incentivos fiscales</strong> que favorezcan su implementación sin perder competitividad. Más del 60% de las pymes en cadenas globales reportan dificultades para cumplir estándares de sostenibilidad. <span style="color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace;font-size:.65rem"> ICC · SME Sustainability Survey 2023</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 8 — GASTO MILITAR vs ODS
+  ══════════════════════════════════════ -->
+  <div class="slide s-militar" data-slide="7">
+    <div class="slide-inner">
+      <div class="kicker" style="color:rgba(255,255,255,.45)">07 · Tensiones presupuestarias</div>
+      <h2 class="h-section" style="color:#fff;margin-bottom:22px">Gasto en defensa vs. financiamiento de los ODS.</h2>
+      <div class="militar-layout">
+        <div class="militar-stat">
+          <div class="militar-num" style="color:var(--c1)">USD 2.443 B</div>
+          <h4>Gasto militar mundial 2023</h4>
+          <p>Representó aprox. un 2,3% del PIB mundial. En 2024 creció a USD 2.718 billones (2,5% del PIB), un incremento interanual del 9,4%. El rearme responde a conflictos regionales, tensiones internacionales y fragmentación del multilateralismo.</p>
+          <div class="militar-src">SIPRI · Trends in World Military Expenditure 2024–2025</div>
+        </div>
+        <div class="militar-stat">
+          <div class="militar-num" style="color:var(--c7)">Casos 2024</div>
+          <h4>Aumentos significativos de gasto militar (% PIB)</h4>
+          <p>
+            <strong style="color:var(--c1)">Israel:</strong> del 5% al 8,8%<br>
+            <strong style="color:var(--c9)">Argelia:</strong> del 6% al 8%<br>
+            <strong style="color:var(--c7)">Arabia Saudita:</strong> del 7,1% al 7,3%<br><br>
+            El rearme amplía la brecha entre economías en desarrollo y economías fuertes, generando además diferencias en potencial bélico.
+          </p>
+          <div class="militar-src">SIPRI · Trends in World Military Expenditure 2025</div>
+        </div>
+        <div class="vs-callout">
+          <div class="big-pct">≈60%</div>
+          <p>El gasto militar anual global equivale aproximadamente al <strong>60% de la brecha financiera anual estimada para los ODS</strong>. Cada recurso invertido en defensa es un recurso que deja de destinarse a educación, salud, infraestructura o transición ecológica. El presupuesto público no es infinito: la discusión es de <strong>asignación estratégica</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 9 — CRONOLOGÍA
+  ══════════════════════════════════════ -->
+  <div class="slide s-timeline" data-slide="8">
+    <div class="slide-inner">
+      <div class="kicker" style="color:var(--muted)">08 · Cronología de compromisos</div>
+      <h2 class="h-section" style="margin-bottom:0">Arquitectura institucional de la cooperación internacional.</h2>
+      <div class="tl-wrap">
+        <div class="tl-track">
+          <div class="tl-item">
+            <div class="tl-year">1994</div>
+            <div class="tl-label">CMNUCC</div>
+            <div class="tl-detail">Convención Marco del Cambio Climático</div>
+            <div class="tl-dot major"></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot major"></div>
+            <div class="tl-year">2001</div>
+            <div class="tl-label">Convenio Estocolmo</div>
+            <div class="tl-detail">PNUMA – sustancias contaminantes</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">2006</div>
+            <div class="tl-label">PRI</div>
+            <div class="tl-detail">Principios para la Inversión Responsable</div>
+            <div class="tl-dot major"></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot crisis"></div>
+            <div class="tl-year">2015</div>
+            <div class="tl-label">Agenda 2030 + ODS + Acuerdo de París</div>
+            <div class="tl-detail">Hito fundacional global</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">2018</div>
+            <div class="tl-label">Reforma OCDE–UNCTAD</div>
+            <div class="tl-detail">Nuevas cláusulas ambientales y sociales</div>
+            <div class="tl-dot major"></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot major"></div>
+            <div class="tl-year">2021</div>
+            <div class="tl-label">Art. 6 París</div>
+            <div class="tl-detail">Mercados de carbono internacionales</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">2022</div>
+            <div class="tl-label">Kunming–Montreal</div>
+            <div class="tl-detail">4 objetivos 2050 · 23 metas 2030 biodiversidad</div>
+            <div class="tl-dot major"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 10 — COOPERACIÓN ONU
+  ══════════════════════════════════════ -->
+  <div class="slide s-onu" data-slide="9">
+    <div class="slide-inner">
+      <div class="kicker" style="color:var(--muted)">09 · El debate en la ONU</div>
+      <h2 class="h-section" style="margin-bottom:22px">Marcos y acuerdos de cooperación internacional.</h2>
+      <div class="onu-grid">
+        <div class="onu-card">
+          <div class="onu-year">2015</div>
+          <h4>Agenda 2030 y ODS</h4>
+          <p>193 Estados adoptan 17 objetivos y 169 metas. Inversión de USD 5–7 billones anuales. Las empresas deben seguir estrategias ESG y dar reportes de sostenibilidad.</p>
+        </div>
+        <div class="onu-card" style="border-top-color:var(--c13)">
+          <div class="onu-year" style="color:var(--c13)">2015</div>
+          <h4>Acuerdo de París (CMNUCC)</h4>
+          <p>Tratado climático vinculante con metas claras de temperatura. Llamamientos a la transición energética y reducción de emisiones de GEI.</p>
+        </div>
+        <div class="onu-card" style="border-top-color:var(--c9)">
+          <div class="onu-year" style="color:var(--c9)">2015</div>
+          <h4>Acuerdo de Sendai</h4>
+          <p>Estrategias para invertir en infraestructura resiliente y preparada para desastres naturales. Reducción del riesgo de catástrofes.</p>
+        </div>
+        <div class="onu-card" style="border-top-color:var(--c7)">
+          <div class="onu-year" style="color:var(--c7)">2018</div>
+          <h4>Reforma Tratados OCDE–UNCTAD–CNUDMI</h4>
+          <p>Proceso de reforma de tratados de inversión que incorpora nuevas cláusulas ambientales y sociales en los acuerdos bilaterales y multilaterales.</p>
+        </div>
+        <div class="onu-card" style="border-top-color:var(--c1)">
+          <div class="onu-year" style="color:var(--c1)">2021</div>
+          <h4>Art. 6 Acuerdo de París</h4>
+          <p>Mecanismo de mercado con reglas para créditos de carbono internacionales. Regula el comercio de emisiones entre países para incentivar la descarbonización.</p>
+        </div>
+        <div class="onu-card" style="border-top-color:var(--c3)">
+          <div class="onu-year" style="color:var(--c3)">2022</div>
+          <h4>Marco Kunming–Montreal</h4>
+          <p>4 objetivos globales al 2050 y 23 metas al 2030 para detener y revertir la pérdida de biodiversidad. El acuerdo de biodiversidad más ambicioso de la historia.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 11 — TOP 3 RANKING
+  ══════════════════════════════════════ -->
+  <div class="slide s-ranking" data-slide="10">
+    <div class="slide-inner">
+      <div class="kicker" style="color:var(--muted)">10 · Ranking de cumplimiento</div>
+      <h2 class="h-section" style="margin-bottom:22px">Los que avanzan, los que retroceden.</h2>
+      <div class="top-grid">
+        <div class="top-col best">
+          <div class="top-col-label">Top 3 · Más cumplidos</div>
+          <div class="top-row">
+            <div class="top-badge" style="background:var(--c7)">07</div>
+            <div><h4>Energía asequible y no contaminante</h4><p>Acceso global a la electricidad y crecimiento sostenido de renovables.</p></div>
+            <div class="top-stat" style="color:var(--c3)">91%<small>Acceso eléctrico global</small></div>
+          </div>
+          <div class="top-row">
+            <div class="top-badge" style="background:var(--c3)">03</div>
+            <div><h4>Salud y bienestar</h4><p>Mortalidad infantil reducida casi a la mitad desde 2000.</p></div>
+            <div class="top-stat" style="color:var(--c3)">−59%<small>Mortalidad &lt;5 años</small></div>
+          </div>
+          <div class="top-row">
+            <div class="top-badge" style="background:var(--c9)">09</div>
+            <div><h4>Industria, innovación e infraestructura</h4><p>Cobertura móvil 4G y avance en I+D.</p></div>
+            <div class="top-stat" style="color:var(--c3)">95%<small>Cobertura 4G mundial</small></div>
+          </div>
+        </div>
+        <div class="top-col worst">
+          <div class="top-col-label">Top 3 · Más rezagados</div>
+          <div class="top-row">
+            <div class="top-badge" style="background:var(--c2)">02</div>
+            <div><h4>Hambre cero</h4><p>La inseguridad alimentaria severa volvió a niveles previos a 2015.</p></div>
+            <div class="top-stat" style="color:var(--c1)">733 M<small>Personas con hambre · FAO 2024</small></div>
+          </div>
+          <div class="top-row">
+            <div class="top-badge" style="background:var(--c13)">13</div>
+            <div><h4>Acción por el clima</h4><p>Las emisiones globales siguen creciendo; trayectoria proyecta +2,7°C.</p></div>
+            <div class="top-stat" style="color:var(--c1)">+1,3%<small>Emisiones CO₂ 2023 · IEA</small></div>
+          </div>
+          <div class="top-row">
+            <div class="top-badge" style="background:var(--c10)">10</div>
+            <div><h4>Reducción de desigualdades</h4><p>El 1% más rico capturó 2/3 de la nueva riqueza desde 2020.</p></div>
+            <div class="top-stat" style="color:var(--c1)">63%<small>Riqueza al 1% · WIR</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 12 — REGIONAL
+  ══════════════════════════════════════ -->
+  <div class="slide s-regional" data-slide="11">
+    <div class="slide-inner">
+      <div class="kicker" style="color:var(--muted)">11 · Índice ODS 2024 por región</div>
+      <h2 class="h-section" style="margin-bottom:28px">Comparación regional — puntaje sobre 100.</h2>
+      <div class="reg-list">
+        <div class="reg-row">
+          <div class="reg-name">OCDE / Europa</div>
+          <div class="reg-bar"><i style="background:linear-gradient(90deg,var(--c3),var(--c15))" data-w="77.6"></i></div>
+          <div class="reg-score" style="color:var(--c3)">77,6</div>
+        </div>
+        <div class="reg-row">
+          <div class="reg-name">Europa del Este y Asia Central</div>
+          <div class="reg-bar"><i style="background:linear-gradient(90deg,var(--un-deep),var(--un-blue))" data-w="71.8"></i></div>
+          <div class="reg-score">71,8</div>
+        </div>
+        <div class="reg-row">
+          <div class="reg-name">América Latina y el Caribe</div>
+          <div class="reg-bar"><i style="background:linear-gradient(90deg,var(--un-deep),var(--un-blue))" data-w="68.7"></i></div>
+          <div class="reg-score">68,7</div>
+        </div>
+        <div class="reg-row">
+          <div class="reg-name">Asia Oriental y del Sur</div>
+          <div class="reg-bar"><i style="background:linear-gradient(90deg,var(--un-deep),var(--un-blue))" data-w="65.9"></i></div>
+          <div class="reg-score">65,9</div>
+        </div>
+        <div class="reg-row">
+          <div class="reg-name">Medio Oriente y África del Norte</div>
+          <div class="reg-bar"><i style="background:linear-gradient(90deg,var(--c7),var(--c9))" data-w="64.5"></i></div>
+          <div class="reg-score" style="color:var(--c7)">64,5</div>
+        </div>
+        <div class="reg-row">
+          <div class="reg-name">Oceanía (excl. Australia/NZ)</div>
+          <div class="reg-bar"><i style="background:linear-gradient(90deg,var(--c9),var(--c1))" data-w="58.4"></i></div>
+          <div class="reg-score" style="color:var(--c9)">58,4</div>
+        </div>
+        <div class="reg-row">
+          <div class="reg-name" style="font-weight:700">África Subsahariana</div>
+          <div class="reg-bar"><i style="background:linear-gradient(90deg,var(--c4),var(--c1))" data-w="53.6"></i></div>
+          <div class="reg-score" style="color:var(--c1)">53,6</div>
+        </div>
+        <div class="reg-row" style="border-bottom:none;margin-top:6px;padding-top:16px;border-top:2px solid var(--rule)">
+          <div class="reg-name" style="font-weight:700">Promedio mundial</div>
+          <div class="reg-bar"><i style="background:var(--ink)" data-w="66.9"></i></div>
+          <div class="reg-score" style="font-size:1.3rem">66,9</div>
+        </div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:14px;letter-spacing:.08em">Sachs, Lafortune, Fuller & Drumm (2024). Sustainable Development Report 2024. SDSN / Cambridge University Press.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 13 — CRÍTICAS
+  ══════════════════════════════════════ -->
+  <div class="slide s-criticas" data-slide="12">
+    <div class="slide-inner">
+      <div class="kicker" style="color:rgba(255,255,255,.4)">12 · Mirada crítica</div>
+      <h2 class="h-section" style="color:#fff;margin-bottom:24px">Los puntos ciegos de la Agenda.</h2>
+      <div class="criticas-grid">
+        <div class="crit-card">
+          <div class="crit-accent" style="background:var(--c1)"></div>
+          <div class="crit-num">01</div>
+          <h3>Brecha de financiamiento</h3>
+          <p>El déficit anual entre 3,3 y 4,5 billones de dólares no se cerrará con AOD. La arquitectura financiera internacional sigue penalizando a los países deudores sin reformas estructurales.</p>
+        </div>
+        <div class="crit-card">
+          <div class="crit-accent" style="background:var(--c10)"></div>
+          <div class="crit-num">02</div>
+          <h3>Metas incumplibles</h3>
+          <p>Varios objetivos como hambre cero o igualdad de género absoluta son aspiracionales y carecen de mecanismos vinculantes. Su evaluación premia el esfuerzo, no el resultado.</p>
+        </div>
+        <div class="crit-card">
+          <div class="crit-accent" style="background:var(--c13)"></div>
+          <div class="crit-num">03</div>
+          <h3>Greenwashing corporativo</h3>
+          <p>El uso del logotipo ODS por empresas privadas sin auditoría externa diluye la rendición de cuentas y convierte los objetivos en herramienta de marketing sin impacto real.</p>
+        </div>
+        <div class="crit-card">
+          <div class="crit-accent" style="background:var(--c5)"></div>
+          <div class="crit-num">04</div>
+          <h3>Desigualdad entre países</h3>
+          <p>El indicador agregado oculta divergencias profundas. Europa avanza en 14 de 17 ODS; el África subsahariana retrocede en 6. La Agenda no contempla compensaciones estructurales.</p>
+        </div>
+        <div class="crit-card">
+          <div class="crit-accent" style="background:var(--c7)"></div>
+          <div class="crit-num">05</div>
+          <h3>Estadísticas débiles</h3>
+          <p>De los 248 indicadores, sólo 132 cuentan con datos comparables anualmente. En países de bajos ingresos, el déficit estadístico hace imposible medir el progreso real.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 14 — GUÍA DE INVESTIGACIÓN
+  ══════════════════════════════════════ -->
+  <div class="slide s-guia" data-slide="13">
+    <div class="glow glow-1" style="opacity:.5"></div>
+    <div class="glow glow-2" style="opacity:.5"></div>
+    <div class="slide-inner" style="position:relative;z-index:2">
+      <div class="kicker" style="color:rgba(255,255,255,.45)">13 · Sala de Tratados Internacionales · Uniendo Metas</div>
+      <h2 class="h-section" style="color:#fff;margin-bottom:22px">Guía para investigar — temas de interés.</h2>
+      <div class="guia-layout">
+        <div class="guia-group">
+          <div class="guia-group-title">Posición del país</div>
+          <div class="guia-q">¿Cómo se posiciona el país que representás frente a esta problemática? ¿Se encuentra en una posición vulnerable? ¿De qué forma?</div>
+          <div class="guia-q">¿Su país enfrenta restricciones fiscales severas? ¿En qué sectores se reflejan más?</div>
+          <div class="guia-q">¿Apoya reformas en la arquitectura financiera global? ¿Cuáles?</div>
+          <div class="guia-q">¿El desarrollo sostenible puede existir sin estabilidad militar para tu delegación?</div>
+        </div>
+        <div class="guia-group">
+          <div class="guia-group-title">Financiamiento privado y público</div>
+          <div class="guia-q">¿Qué porcentaje del financiamiento para desarrollo en tu país proviene del sector privado? ¿Y en qué sectores invierte más?</div>
+          <div class="guia-q">¿Existen asociaciones público-privadas (APP) activas? ¿En qué sectores?</div>
+          <div class="guia-q">¿Tu país invierte en transición energética? ¿Con fondos públicos o privados?</div>
+          <div class="guia-q">¿Cómo impactó la reorganización de prioridades presupuestarias globales?</div>
+        </div>
+        <div class="guia-group">
+          <div class="guia-group-title">Gasto militar y cooperación</div>
+          <div class="guia-q">¿Qué porcentaje del PIB destina tu país a gastos militares? ¿Impactó al presupuesto social?</div>
+          <div class="guia-q">¿Tu país tiene compromisos militares internacionales, alianzas, pactos o conflictos activos que justifiquen gasto militar?</div>
+          <div class="guia-q">¿Cómo proponés que, dentro del marco de la cooperación internacional, estas problemáticas se traten?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SLIDE 15 — CONCLUSIÓN
+  ══════════════════════════════════════ -->
+  <div class="slide s-conclusion" data-slide="14">
+    <div class="glow glow-1" style="opacity:.4"></div>
+    <div class="glow glow-2" style="opacity:.4"></div>
+    <div class="slide-inner" style="position:relative;z-index:2">
+      <div class="kicker" style="color:rgba(255,255,255,.4)">14 · Cierre</div>
+      <h2 class="h-section" style="color:#fff;margin-bottom:22px">Cuatro lecciones para la última década de la Agenda.</h2>
+      <div class="concl-grid">
+        <div class="concl-item">
+          <div class="concl-n">01</div>
+          <div>
+            <h4>El marco funciona; la ejecución no</h4>
+            <p>Los ODS demostraron utilidad como lenguaje común global. El problema no es el diagnóstico, sino el ritmo y la escala de las respuestas.</p>
+          </div>
+        </div>
+        <div class="concl-item">
+          <div class="concl-n">02</div>
+          <div>
+            <h4>Sin reforma financiera, no hay 2030</h4>
+            <p>La arquitectura financiera debe ofrecer reestructuración de deuda, capitalización de bancos multilaterales y un impuesto mínimo global efectivo.</p>
+          </div>
+        </div>
+        <div class="concl-item">
+          <div class="concl-n">03</div>
+          <div>
+            <h4>El multilateralismo está bajo presión</h4>
+            <p>Las crisis geopolíticas debilitan la cooperación. El Pacto para el Futuro (2024) busca recomponer la confianza, pero su implementación sigue siendo voluntaria.</p>
+          </div>
+        </div>
+        <div class="concl-item">
+          <div class="concl-n">04</div>
+          <div>
+            <h4>2030 no es un final, es una bisagra</h4>
+            <p>La Agenda definió la próxima generación de marcos: post-2030, biodiversidad post-Kunming, NDC reforzadas. La transición ya empezó.</p>
+          </div>
+        </div>
+      </div>
+      <div class="quote-block">
+        <div class="qmark">"</div>
+        <div>
+          <p>Esta es una Agenda de las personas, por las personas y para las personas; y, precisamente por ello, puede transformar nuestro mundo.</p>
+          <cite>Resolución A/RES/70/1 · Transformar nuestro mundo: la Agenda 2030 — Naciones Unidas, 2015</cite>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ─── NAVBAR ─── -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" aria-label="Anterior">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="slide-counter" id="slideCounter">1 / 15</div>
+  <button class="nav-btn" id="nextBtn" aria-label="Siguiente">
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<script>
+// ─── ODS DATA ───
+const ODS = [
+  {n:1, c:"#E5243B", t:"Fin de la pobreza"},
+  {n:2, c:"#DDA63A", t:"Hambre cero"},
+  {n:3, c:"#4C9F38", t:"Salud y bienestar"},
+  {n:4, c:"#C5192D", t:"Educación de calidad"},
+  {n:5, c:"#FF3A21", t:"Igualdad de género"},
+  {n:6, c:"#26BDE2", t:"Agua limpia"},
+  {n:7, c:"#FCC30B", t:"Energía asequible"},
+  {n:8, c:"#A21942", t:"Trabajo decente"},
+  {n:9, c:"#FD6925", t:"Industria e innovación"},
+  {n:10,c:"#DD1367", t:"Reducción desigualdades"},
+  {n:11,c:"#FD9D24", t:"Ciudades sostenibles"},
+  {n:12,c:"#BF8B2E", t:"Producción responsable"},
+  {n:13,c:"#3F7E44", t:"Acción climática"},
+  {n:14,c:"#0A97D9", t:"Vida submarina"},
+  {n:15,c:"#56C02B", t:"Vida de ecosistemas"},
+  {n:16,c:"#00689D", t:"Paz y justicia"},
+  {n:17,c:"#19486A", t:"Alianzas"},
+];
+
+// Build ODS bands
+['band1','band1b'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  ODS.forEach(s => {
+    const span = document.createElement('span');
+    span.style.background = s.c;
+    el.appendChild(span);
+  });
+});
+
+// Build ODS grid (9 + 8 layout)
+const grid = document.getElementById('odsGrid');
+if (grid) {
+  const row1 = ODS.slice(0, 9);
+  const row2 = ODS.slice(9, 17);
+  row1.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'ods-tile';
+    div.style.background = s.c;
+    div.innerHTML = `<div class="tn">${String(s.n).padStart(2,'0')}</div><div class="tt">${s.t}</div>`;
+    grid.appendChild(div);
+  });
+  const r2 = document.createElement('div');
+  r2.className = 'ods-row2';
+  row2.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'ods-tile';
+    div.style.background = s.c;
+    div.innerHTML = `<div class="tn">${String(s.n).padStart(2,'0')}</div><div class="tt">${s.t}</div>`;
+    r2.appendChild(div);
+  });
+  grid.appendChild(r2);
+}
+
+// ─── SLIDE ENGINE ───
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+let animating = false;
+
+const dotsContainer = document.getElementById('navDots');
+const counter = document.getElementById('slideCounter');
+const progress = document.getElementById('progressBar');
+
+// Build dots
+slides.forEach((_, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  btn.addEventListener('click', () => goTo(i));
+  dotsContainer.appendChild(btn);
+});
+
+function updateUI() {
+  document.querySelectorAll('.nav-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+  });
+  counter.textContent = `${current + 1} / ${total}`;
+  progress.style.width = `${((current + 1) / total) * 100}%`;
+}
+
+function activateBars(slide) {
+  slide.querySelectorAll('[data-w]').forEach(el => {
+    setTimeout(() => { el.style.width = el.dataset.w + '%'; }, 200);
+  });
+}
+
+function goTo(idx) {
+  if (animating || idx === current) return;
+  animating = true;
+  const prev = slides[current];
+  const next = slides[idx];
+  const dir = idx > current ? 1 : -1;
+
+  prev.classList.remove('active');
+  prev.classList.add('prev');
+  next.style.transform = `translateX(${dir * 60}px)`;
+  next.style.opacity = '0';
+  next.style.pointerEvents = 'none';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      next.style.transition = 'opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1)';
+      next.style.transform = 'translateX(0)';
+      next.style.opacity = '1';
+      next.style.pointerEvents = 'all';
+      next.classList.add('active');
+
+      setTimeout(() => {
+        prev.classList.remove('prev');
+        prev.style.transform = '';
+        prev.style.opacity = '';
+        prev.style.pointerEvents = '';
+        prev.style.transition = '';
+        next.style.transition = '';
+        animating = false;
+        activateBars(next);
+      }, 580);
+    });
+  });
+
+  current = idx;
+  updateUI();
+}
+
+function next() { if (current < total - 1) goTo(current + 1); }
+function prev() { if (current > 0) goTo(current - 1); }
+
+document.getElementById('nextBtn').addEventListener('click', next);
+document.getElementById('prevBtn').addEventListener('click', prev);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+});
+
+// Touch / swipe
+let touchX = 0;
+document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+});
+
+// Init bars on first slide
+activateBars(slides[0]);
+updateUI();
+</script>
+</body>
+</html>
